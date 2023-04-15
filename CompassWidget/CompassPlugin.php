@@ -16,7 +16,7 @@ function setArrow(int direction)
     
 */
 <?php
-function getWindSpeed()
+function updateData()
 {
     $conn = new mysqli(); //connection string here
     $minWindSpeed = 0;
