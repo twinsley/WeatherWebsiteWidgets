@@ -18,14 +18,23 @@ function setArrow(int direction)
 <?php
 function updateData()
 {
+    $windSpeeds = array();
+    $windDirections = array();
     $conn = new mysqli(); //connection string here
+    $airport = "";
+    $query = "SELECT * FROM DATA WHERE AIRPORT_ID = $airport LIMIT 5";
+    $result = $conn->query($query);
+      while($row = $result->fetch_assoc()) {
+       $windSpeeds[] = $row["windspeed"];
+        $windDirections[] = $row["direction"];
+    }
+
     $minWindSpeed = 0;
     $maxWindSpeed = 0;
     $avgSum = 0;
     $avgWindSpeed = 0;
     $avgDirection = 0;
-    $windSpeeds = array();
-    $windDirections = array();
+
     foreach($windSpeeds as $speed)
     {
         if($speed < $minWindSpeed)
