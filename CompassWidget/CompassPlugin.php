@@ -1,8 +1,12 @@
 
 <?php
-updateData();
-if(isset($_POST['function_name']) && !empty($_POST['function_name'])) {
-    $function_name = $_POST['function_name'];
+/*
+Plugin Name: Site Plugin for weather compass
+Description: Site specific code changes for weather compass
+*/
+//updateData();
+if(isset($_GET['function_name']) && !empty($_GET['function_name'])) {
+    $function_name = $_GET['function_name'];
     switch($function_name) {
         case 'updateData':
             updateData();
@@ -10,13 +14,15 @@ if(isset($_POST['function_name']) && !empty($_POST['function_name'])) {
         // Add additional cases for other functions as needed
     }
 }
+//add_action( 'wp_ajax_update_data', 'updateData' );
 function updateData()
 {
     $windSpeeds = array();
     $windDirections = array();
     $temperatures = array();
     $humidityLevels = array();
-    $conn = new \mysqli("localhost","root","password","wx1"); //connection string here
+    $response = array();
+    $conn = new \mysqli("eussub1weatherstorage.mysql.database.azure.com","sqladmin","oM9cYJMqruDEvmi3Rh3QhxHKtcWNVVsvxPg@Qa^V","wx1");
     $airport = '42i';
     $query = "SELECT * FROM wxdata WHERE `identifier` = '$airport' order by date desc LIMIT 5";
     $result = $conn->query($query);
@@ -71,11 +77,16 @@ function updateData()
     }
     $avgHumidity = $avgSum / count($humidityLevels);
     $avgSum = 0;
+    $res = ["$minWindSpeed", "$avgWindSpeed", "$maxWindSpeed", "$avgDirection", "$avgTemp", "$avgHumidity"];
+    $response = implode(", ", $res);
     echo "<h1>Min windspeed: $minWindSpeed </h1>";
     echo "<h1>Max windspeed: $maxWindSpeed </h1>";
     echo "<h1>Avg windspeed: $avgWindSpeed </h1>";
     echo "<h1>Avg wind Direction: $avgDirection </h1>";
     echo "<h1>Avg Temperature: $avgTemp </h1>";
     echo "<h1>Avg Humidity: $avgHumidity </h1>";
+    echo $response;
+
+//    wp_die();
 }
 ?>
