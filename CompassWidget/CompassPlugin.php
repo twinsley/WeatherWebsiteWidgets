@@ -1,4 +1,3 @@
-
 <?php
 /*
 Plugin Name: Site Plugin for weather compass
@@ -14,7 +13,8 @@ if(isset($_GET['function_name']) && !empty($_GET['function_name'])) {
         // Add additional cases for other functions as needed
     }
 }
-//add_action( 'wp_ajax_update_data', 'updateData' );
+ add_action( 'wp_ajax_nopriv_update_data', 'updateData' );
+add_action( 'wp_ajax_update_data', 'updateData' );
 function updateData()
 {
     $windSpeeds = array();
@@ -22,9 +22,9 @@ function updateData()
     $temperatures = array();
     $humidityLevels = array();
     $response = array();
-    $conn = new \mysqli("eussub1weatherstorage.mysql.database.azure.com","sqladmin","oM9cYJMqruDEvmi3Rh3QhxHKtcWNVVsvxPg@Qa^V","wx1");
+    $conn = new mysqli("eussub1weatherstorage.mysql.database.azure.com","sqladmin","oM9cYJMqruDEvmi3Rh3QhxHKtcWNVVsvxPg@Qa^V","wx1");
     $airport = '42i';
-    $query = "SELECT * FROM wxdata WHERE `identifier` = '$airport' order by date desc LIMIT 5";
+    $query = "SELECT * FROM wxdata WHERE `identifier` = '$airport' order by date desc LIMIT 6";
     $result = $conn->query($query);
       while($row = $result->fetch_assoc()) {
        $windSpeeds[] = $row["windspeed"];
@@ -77,16 +77,18 @@ function updateData()
     }
     $avgHumidity = $avgSum / count($humidityLevels);
     $avgSum = 0;
-    $res = ["$minWindSpeed", "$avgWindSpeed", "$maxWindSpeed", "$avgDirection", "$avgTemp", "$avgHumidity"];
-    $response = implode(", ", $res);
-    echo "<h1>Min windspeed: $minWindSpeed </h1>";
-    echo "<h1>Max windspeed: $maxWindSpeed </h1>";
-    echo "<h1>Avg windspeed: $avgWindSpeed </h1>";
-    echo "<h1>Avg wind Direction: $avgDirection </h1>";
-    echo "<h1>Avg Temperature: $avgTemp </h1>";
-    echo "<h1>Avg Humidity: $avgHumidity </h1>";
+    $res = array();
+    $res[0] = $minWindSpeed;
+    $res[1] = $avgWindSpeed;
+    $res[2] = $maxWindSpeed;
+    $res[3] = $avgDirection;
+    $res[4] = $avgTemp;
+    $res[5] = $avgHumidity;
+    $res[6] = $airport;
+   $response = implode(",", $res);
+
     echo $response;
 
-//    wp_die();
+    wp_die();
 }
 ?>
