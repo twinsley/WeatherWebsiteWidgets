@@ -163,6 +163,15 @@
                 rotate.style.transform = `translate(-50%, -50%) rotate(${direction}deg)`;
                 let gusting = document.getElementById("gusting")
                 let gustingText = document.getElementById("gustingText")
+                let pointer = document.getElementById("pointer");
+                if(maxWindSpeed <= 10)
+                {
+                    pointer.style.backgroundImage = "url('/wp-content/uploads/2023/05/green-sticker-arrow-3-doubled.png')";
+                }
+                else
+                {
+                    pointer.style.backgroundImage = "url('/wp-content/uploads/2023/05/red-sticker-arrow-3-doubled.png')";
+                }
                 if(maxWindSpeed < minWindSpeed + 10)
                 {
                     gusting.innerHTML = ``
