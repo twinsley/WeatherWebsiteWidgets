@@ -135,7 +135,12 @@
                 <td>Humidity</td>
                 <td id="humidity"></td>
             </tr>
+            <tr>
+                <td>Last Updated (ET):</td>
+                <td id="timestamp"></td>
+            </tr>
         </table>
+        <button type="button" id="unitSwitcher" onclick="switchUnit()" class="btn btn-secondary">Switch to kts</button>
     </div>
 </div>
 </body>
@@ -144,6 +149,21 @@
     setInterval(updateData, 30000);
     let resJson;
     let res;
+    let selectedUnits = "mph";
+    const KTS_CONVERSION_RATE = 0.868976;
+
+    function switchUnit() {
+        currentVal = selectedUnits;
+        if (currentVal == "mph") {
+            selectedUnits = "kts";
+            document.getElementById("unitSwitcher").innerHTML = "Switch to MPH"
+        } else if (currentVal == "kts"){
+            selectedUnits = "mph";
+            document.getElementById("unitSwitcher").innerHTML = "Switch to kts"
+        }
+        updateData();
+    }
+
     function updateData() {
         let xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
@@ -157,6 +177,7 @@
                 let avgTemperature = Math.round(parseFloat(resJson[4]));
                 let avgHumidity = Math.round(parseFloat(resJson[5]));
                 let airport = resJson[6];
+                let today = new Date();
 
                 let direction = parseInt(avgDirection) + 90;
                 let rotate = document.getElementById("pointer")
@@ -181,25 +202,36 @@
                 }
                 if(maxWindSpeed >= minWindSpeed + 10)
                 {
-                    gusting.innerHTML = `${maxWindSpeed}mph`
+                    if (selectedUnits == "mph") {
+                        gusting.innerHTML = `${maxWindSpeed}mph`
+                    } else if (selectedUnits == "kts") {
+                        gusting.innerHTML = `${Math.round(maxWindSpeed * KTS_CONVERSION_RATE)}kts`
+                    }
                     gustingText.innerHTML = `Gusting`
                     gustingText.style = "background-color: yellow;"
                     gusting.style = "background-color: yellow;"
                 }
                 if(maxWindSpeed >= minWindSpeed + 20)
                 {
-                    gusting.innerHTML = `${maxWindSpeed}mph`
+                    if (selectedUnits == "mph") {
+                        gusting.innerHTML = `${maxWindSpeed}mph`
+                    } else if (selectedUnits == "kts") {
+                        gusting.innerHTML = `${Math.round(maxWindSpeed * KTS_CONVERSION_RATE)}kts`
+                    }
                     gustingText.innerHTML = `Gusting`
                     gustingText.style = "background-color: red;"
                     gusting.style = "background-color: red;"
                 }
-
-                document.getElementById("windDirection").innerHTML = `${avgDirection}&#176`
+                if (selectedUnits == "mph"){
                 document.getElementById("avgWindspeed").innerHTML = `${avgWindSpeed}mph`
-
+                } else if (selectedUnits == "kts") {
+                    document.getElementById("avgWindspeed").innerHTML = `${Math.round(avgWindSpeed * KTS_CONVERSION_RATE)}kts`
+                }
+                document.getElementById("windDirection").innerHTML = `${avgDirection}&#176`
                 document.getElementById("temperature").innerHTML = `${avgTemperature}&#x2109`
                 document.getElementById("humidity").innerHTML = `${avgHumidity}%`
                 document.getElementById("airport").innerHTML = airport;
+                document.getElementById("timestamp").innerHTML = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
             }
         };
         xhttp.open("GET", "/wp-admin/admin-ajax.php?action=update_data", true);
